@@ -5,18 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TerraFX.Interop.Windows" />
+    <PackageReference Include="Vortice.Win32.Graphics.Direct3D.Dxc" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="runtimes\win-x64\native\dxil.dll">
-      <PackagePath>runtimes\win-x64\native</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="runtimes\win-x64\native\dxcompiler.dll">
-      <PackagePath>runtimes\win-x64\native</PackagePath>
-      <Pack>true</Pack>
-    </Content>
+    <Content Include="runtimes\**" PackagePath="runtimes" Pack="true" />
   </ItemGroup>
 
 </Project>

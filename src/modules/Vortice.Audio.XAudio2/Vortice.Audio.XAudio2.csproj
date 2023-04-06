@@ -7,7 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Vortice\Vortice.csproj" />
 
-    <PackageReference Include="TerraFX.Interop.Windows" />
+    <PackageReference Include="Vortice.Win32.Media.Audio.XAudio2" />
   </ItemGroup>
 
 </Project>

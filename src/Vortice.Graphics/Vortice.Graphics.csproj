@@ -24,8 +24,8 @@
     <PackageReference Include="Vortice.Mathematics" />
 
     <PackageReference Include="Vortice.Vulkan" Condition="'$(ExcludeVulkan)' != 'true'" />
-    <PackageReference Include="TerraFX.Interop.Windows" Condition="'$(ExcludeD3D12)' != 'true'" />
-    <PackageReference Include="TerraFX.Interop.D3D12MemoryAllocator" Condition="'$(ExcludeD3D12)' != 'true'" />
+    <PackageReference Include="Vortice.Win32.Graphics.Dxgi" Condition="'$(ExcludeD3D12)' != 'true'" />
+    <PackageReference Include="Vortice.Win32.Graphics.Direct3D12" Condition="'$(ExcludeD3D12)' != 'true'" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(_VorticeTargetPlatformIsWindows)' == 'True' AND $(TargetFramework.Contains('-windows10'))">

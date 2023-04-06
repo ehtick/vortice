@@ -2,14 +2,12 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.Diagnostics;
-using TerraFX.Interop.DirectX;
-using TerraFX.Interop.Windows;
-using static TerraFX.Interop.Windows.Windows;
-using static TerraFX.Interop.DirectX.DirectX;
-using static TerraFX.Interop.Windows.AUDIO_STREAM_CATEGORY;
-using static TerraFX.Interop.DirectX.XAUDIO2;
-using static TerraFX.Interop.DirectX.X3DAUDIO;
 using System.Runtime.InteropServices;
+using Win32;
+using Win32.Media.Audio;
+using Win32.Media.Audio.XAudio2;
+using static Win32.Apis;
+using static Win32.Media.Audio.XAudio2.Apis;
 
 namespace Vortice.Audio.XAudio2;
 
@@ -17,7 +15,7 @@ internal unsafe class XAudio2Module : AudioModule
 {
     private static readonly Lazy<bool> s_isSupported = new(CheckIsSupported);
 
-    private readonly AUDIO_STREAM_CATEGORY _category = AudioCategory_GameEffects;
+    private readonly AudioStreamCategory _category = AudioStreamCategory.GameEffects;
 
     private readonly ComPtr<IXAudio2> _xaudio2 = default;
     private XAudio2EngineCallback* _engineCallback;
@@ -27,7 +25,7 @@ internal unsafe class XAudio2Module : AudioModule
     private readonly uint _masterChannelMask;
     private readonly uint _masterChannels;
     private readonly uint _masterRate;
-    private byte* _X3DAudio;
+    private readonly X3DAudioHandle _X3DAudio;
 
     public static bool EnableValidation { get; set; }
 
@@ -42,25 +40,25 @@ internal unsafe class XAudio2Module : AudioModule
         ApiName = "XAudio2";
         ApiVersion = new Version(2, 9, 0);
 
-        HRESULT hr = XAudio2Create(_xaudio2.GetAddressOf());
+        HResult hr = XAudio2Create(_xaudio2.GetAddressOf());
         ThrowIfFailed(hr);
 
 #if DEBUG
         if (EnableValidation)
         {
-            XAUDIO2_DEBUG_CONFIGURATION debug = new()
+            DebugConfiguration debug = new()
             {
                 TraceMask = XAUDIO2_LOG_ERRORS | XAUDIO2_LOG_WARNINGS,
                 BreakMask = XAUDIO2_LOG_ERRORS
             };
-            _xaudio2.Get()->SetDebugConfiguration(&debug);
+            _xaudio2.Get()->SetDebugConfiguration(&debug, null);
             Debug.WriteLine("INFO: XAudio 2.9 debugging enabled");
         }
 #endif
 
         XAudio2EngineCallback.Create(out _engineCallback);
         hr = _xaudio2.Get()->RegisterForCallbacks((IXAudio2EngineCallback*)_engineCallback);
-        if (hr.FAILED)
+        if (hr.Failure)
         {
             _xaudio2.Dispose();
             return;
@@ -76,7 +74,7 @@ internal unsafe class XAudio2Module : AudioModule
             null,
             _category
             );
-        if (hr.FAILED)
+        if (hr.Failure)
         {
             _xaudio2.Dispose();
             return;
@@ -86,7 +84,7 @@ internal unsafe class XAudio2Module : AudioModule
 
         uint dwChannelMask;
         hr = _masterVoice->GetChannelMask(&dwChannelMask);
-        if (hr.FAILED)
+        if (hr.Failure)
         {
             _masterVoice->DestroyVoice();
             _masterVoice = default;
@@ -94,7 +92,7 @@ internal unsafe class XAudio2Module : AudioModule
             return;
         }
 
-        XAUDIO2_VOICE_DETAILS details;
+        VoiceDetails details;
         _masterVoice->GetVoiceDetails(&details);
 
         _masterChannelMask = dwChannelMask;
@@ -103,9 +101,8 @@ internal unsafe class XAudio2Module : AudioModule
         Debug.WriteLine($"Mastering voice has {_masterChannels} channels, {_masterRate} sample rate, {_masterChannelMask} channels");
 
         // Setup 3D audio
-        _X3DAudio = (byte*)NativeMemory.Alloc(X3DAUDIO_HANDLE_BYTESIZE);
-        hr = X3DAudioInitialize(_masterChannelMask, X3DAUDIO_SPEED_OF_SOUND, _X3DAudio);
-        if (hr.FAILED)
+        hr = X3DAudioInitialize(_masterChannelMask, X3DAUDIO_SPEED_OF_SOUND, out _X3DAudio);
+        if (hr.Failure)
         {
             if (_reverbVoice != null)
             {
@@ -138,7 +135,6 @@ internal unsafe class XAudio2Module : AudioModule
             _masterVoice = default;
             _xaudio2.Dispose();
             XAudio2EngineCallback.Free(_engineCallback);
-            NativeMemory.Free(_X3DAudio);
         }
     }
 
@@ -149,7 +145,7 @@ internal unsafe class XAudio2Module : AudioModule
 
         if (_masterVoice != null)
         {
-            ThrowIfFailed(_masterVoice->SetVolume(volume));
+            ThrowIfFailed(_masterVoice->SetVolume(volume, 0u));
         }
     }
 

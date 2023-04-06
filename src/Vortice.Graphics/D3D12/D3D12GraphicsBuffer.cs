@@ -1,10 +1,8 @@
 // Copyright © Amer Koleci.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-using TerraFX.Interop.DirectX;
-using TerraFX.Interop.Windows;
-using static TerraFX.Interop.DirectX.D3D12_RESOURCE_FLAGS;
-using static TerraFX.Interop.DirectX.D3D12_RESOURCE_STATES;
+using Win32;
+using Win32.Graphics.Direct3D12;
 
 namespace Vortice.Graphics.D3D12;
 
@@ -15,9 +13,9 @@ internal unsafe class D3D12GraphicsBuffer : GraphicsBuffer
     public D3D12GraphicsBuffer(D3D12GraphicsDevice device, in BufferDescription description, void* initialData)
         : base(device, in description)
     {
-        var d3d12ResourceDesc = D3D12_RESOURCE_DESC.Buffer(
+        var d3d12ResourceDesc = ResourceDescription.Buffer(
               description.Size,
-              D3D12_RESOURCE_FLAG_NONE
+              ResourceFlags.None
         );
 
         var d3d12Device = device.Handle;

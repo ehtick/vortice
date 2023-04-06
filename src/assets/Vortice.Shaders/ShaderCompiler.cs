@@ -2,13 +2,10 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.Runtime.CompilerServices;
-using TerraFX.Interop.DirectX;
-using TerraFX.Interop.Windows;
-using static TerraFX.Interop.Windows.Windows;
-using static TerraFX.Interop.DirectX.DXC_OUT_KIND;
-using static TerraFX.Interop.Windows.CLSID;
-using static TerraFX.Interop.DirectX.DirectX;
-using static TerraFX.Interop.DirectX.DXC;
+using Win32;
+using Win32.Graphics.Direct3D.Dxc;
+using static Win32.Apis;
+using static Win32.Graphics.Direct3D.Dxc.Apis;
 
 namespace Vortice.Shaders;
 
@@ -91,7 +88,7 @@ public sealed partial class ShaderCompiler
             ThrowIfFailed(_dxcUtils.Get()->CreateBlobFromPinned(
                 pSource,
                 (uint)source.Length * 2,
-                DXC_CP_UTF16,
+                DxcCp.Utf16,
                 dxcBlobEncoding.GetAddressOf())
                 );
         }
@@ -100,7 +97,7 @@ public sealed partial class ShaderCompiler
         {
             Ptr = dxcBlobEncoding.Get()->GetBufferPointer(),
             Size = dxcBlobEncoding.Get()->GetBufferSize(),
-            Encoding = (uint)DXC_CP_ACP,
+            Encoding = DxcCp.Acp,
         };
 
         fixed (char* shaderName = "")
@@ -124,7 +121,7 @@ public sealed partial class ShaderCompiler
                 //warningsAsErrors*/
             };
 
-            HRESULT hr = _dxcCompiler.Get()->Compile(
+            HResult hr = _dxcCompiler.Get()->Compile(
                 &buffer,
                 (ushort**)arguments,
                 argCount,
@@ -133,7 +130,7 @@ public sealed partial class ShaderCompiler
                 results.GetVoidAddressOf()
                 );
 
-            if (hr.FAILED)
+            if (hr.Failure)
             {
                 return new DxcShaderCompilationResult($"Compile failed with HRESULT {hr}");
             }
@@ -142,7 +139,7 @@ public sealed partial class ShaderCompiler
             // Print errors if present.
             //
             using ComPtr<IDxcBlobUtf8> errors = default;
-            results.Get()->GetOutput(DXC_OUT_ERRORS,
+            results.Get()->GetOutput(DxcOutKind.Errors,
                 __uuidof<IDxcBlobUtf8>(),
                 errors.GetVoidAddressOf(),
                 null
@@ -156,16 +153,16 @@ public sealed partial class ShaderCompiler
             }
 
             // Quit if the compilation failed.
-            HRESULT hrStatus;
+            HResult hrStatus;
             results.Get()->GetStatus(&hrStatus);
-            if (hrStatus.FAILED)
+            if (hrStatus.Failure)
             {
                 return new DxcShaderCompilationResult($"Compile failed with HRESULT {hrStatus}");
             }
 
             using ComPtr<IDxcBlob> byteCode = default;
             using ComPtr<IDxcBlobUtf16> pShaderName = default;
-            results.Get()->GetOutput(DXC_OUT_OBJECT,
+            results.Get()->GetOutput(DxcOutKind.Object,
                 __uuidof<IDxcBlob>(),
                 byteCode.GetVoidAddressOf(),
                 pShaderName.GetAddressOf()

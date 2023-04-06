@@ -4,215 +4,215 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using CommunityToolkit.Diagnostics;
-using TerraFX.Interop.DirectX;
-using static TerraFX.Interop.DirectX.D3D_PRIMITIVE_TOPOLOGY;
-using static TerraFX.Interop.DirectX.DXGI_FORMAT;
-using static TerraFX.Interop.DirectX.DXGI_GPU_PREFERENCE;
+using Win32.Graphics.Direct3D12;
+using Win32.Graphics.Dxgi;
+using Win32.Graphics.Dxgi.Common;
+using D3DPrimitiveTopology = Win32.Graphics.Direct3D.PrimitiveTopology;
 
 namespace Vortice.Graphics.D3D12;
 
 internal static unsafe class D3DUtils
 {
-    private static readonly DXGI_GPU_PREFERENCE[] s_d3dGpuPreferenceMap = new DXGI_GPU_PREFERENCE[(int)GpuPowerPreference.Count] {
-        DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
-        DXGI_GPU_PREFERENCE_MINIMUM_POWER
+    private static readonly GpuPreference[] s_d3dGpuPreferenceMap = new GpuPreference[(int)GpuPowerPreference.Count] {
+        GpuPreference.HighPerformance,
+        GpuPreference.MinimumPower
     };
 
-    private static readonly D3D_PRIMITIVE_TOPOLOGY[] s_d3dPrimitiveTopologyMap = new D3D_PRIMITIVE_TOPOLOGY[(int)PrimitiveTopology.Count] {
-        D3D_PRIMITIVE_TOPOLOGY_POINTLIST,
-        D3D_PRIMITIVE_TOPOLOGY_LINELIST,
-        D3D_PRIMITIVE_TOPOLOGY_LINESTRIP,
-        D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
-        D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,
+    private static readonly D3DPrimitiveTopology[] s_d3dPrimitiveTopologyMap = new D3DPrimitiveTopology[(int)PrimitiveTopology.Count] {
+        D3DPrimitiveTopology.PointList,
+        D3DPrimitiveTopology.LineList,
+        D3DPrimitiveTopology.LineStrip,
+        D3DPrimitiveTopology.TriangleList,
+        D3DPrimitiveTopology.TriangleStrip,
     };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static DXGI_FORMAT ToDxgiSwapChainFormat(this PixelFormat format)
+    public static Format ToDxgiSwapChainFormat(this PixelFormat format)
     {
         // FLIP_DISCARD and FLIP_SEQEUNTIAL swapchain buffers only support these formats
         switch (format)
         {
             case PixelFormat.Rgba16Float:
-                return DXGI_FORMAT_R16G16B16A16_FLOAT;
+                return Format.R16G16B16A16Float;
 
             case PixelFormat.Bgra8Unorm:
             case PixelFormat.Bgra8UnormSrgb:
-                return DXGI_FORMAT_B8G8R8A8_UNORM;
+                return Format.B8G8R8A8Unorm;
 
             case PixelFormat.Rgba8Unorm:
             case PixelFormat.Rgba8UnormSrgb:
-                return DXGI_FORMAT_R8G8B8A8_UNORM;
+                return Format.R8G8B8A8Unorm;
 
             case PixelFormat.Rgb10a2Unorm:
-                return DXGI_FORMAT_R10G10B10A2_UNORM;
+                return Format.R10G10B10A2Unorm;
 
             default:
-                return DXGI_FORMAT_B8G8R8A8_UNORM;
+                return Format.B8G8R8A8Unorm;
         }
     }
 
-    public static DXGI_FORMAT ToDxgiFormat(this PixelFormat format)
+    public static Format ToDxgiFormat(this PixelFormat format)
     {
         switch (format)
         {
             // 8-bit formats
-            case PixelFormat.R8Unorm: return DXGI_FORMAT_R8_UNORM;
-            case PixelFormat.R8Snorm: return DXGI_FORMAT_R8_SNORM;
-            case PixelFormat.R8Uint: return DXGI_FORMAT_R8_UINT;
-            case PixelFormat.R8Sint: return DXGI_FORMAT_R8_SINT;
+            case PixelFormat.R8Unorm: return Format.R8Unorm;
+            case PixelFormat.R8Snorm: return Format.R8Snorm;
+            case PixelFormat.R8Uint: return Format.R8Uint;
+            case PixelFormat.R8Sint: return Format.R8Sint;
             // 16-bit formats
-            case PixelFormat.R16Unorm: return DXGI_FORMAT_R16_UNORM;
-            case PixelFormat.R16Snorm: return DXGI_FORMAT_R16_SNORM;
-            case PixelFormat.R16Uint: return DXGI_FORMAT_R16_UINT;
-            case PixelFormat.R16Sint: return DXGI_FORMAT_R16_SINT;
-            case PixelFormat.R16Float: return DXGI_FORMAT_R16_FLOAT;
-            case PixelFormat.Rg8Unorm: return DXGI_FORMAT_R8G8_UNORM;
-            case PixelFormat.Rg8Snorm: return DXGI_FORMAT_R8G8_SNORM;
-            case PixelFormat.Rg8Uint: return DXGI_FORMAT_R8G8_UINT;
-            case PixelFormat.Rg8Sint: return DXGI_FORMAT_R8G8_SINT;
+            case PixelFormat.R16Unorm: return Format.R16Unorm;
+            case PixelFormat.R16Snorm: return Format.R16Snorm;
+            case PixelFormat.R16Uint: return Format.R16Uint;
+            case PixelFormat.R16Sint: return Format.R16Sint;
+            case PixelFormat.R16Float: return Format.R16Float;
+            case PixelFormat.Rg8Unorm: return Format.R8G8Unorm;
+            case PixelFormat.Rg8Snorm: return Format.R8G8Snorm;
+            case PixelFormat.Rg8Uint: return Format.R8G8Uint;
+            case PixelFormat.Rg8Sint: return Format.R8G8Sint;
             // Packed 16-Bit Pixel Formats
-            case PixelFormat.Bgra4Unorm: return DXGI_FORMAT_B4G4R4A4_UNORM;
-            case PixelFormat.B5G6R5Unorm: return DXGI_FORMAT_B5G6R5_UNORM;
-            case PixelFormat.Bgr5A1Unorm: return DXGI_FORMAT_B5G5R5A1_UNORM;
+            case PixelFormat.Bgra4Unorm: return Format.B4G4R4A4Unorm;
+            case PixelFormat.B5G6R5Unorm: return Format.B5G6R5Unorm;
+            case PixelFormat.Bgr5A1Unorm: return Format.B5G5R5A1Unorm;
             // 32-bit formats
-            case PixelFormat.R32Uint: return DXGI_FORMAT_R32_UINT;
-            case PixelFormat.R32Sint: return DXGI_FORMAT_R32_SINT;
-            case PixelFormat.R32Float: return DXGI_FORMAT_R32_FLOAT;
-            case PixelFormat.Rg16Unorm: return DXGI_FORMAT_R16G16_UNORM;
-            case PixelFormat.Rg16Snorm: return DXGI_FORMAT_R16G16_SNORM;
-            case PixelFormat.Rg16Uint: return DXGI_FORMAT_R16G16_UINT;
-            case PixelFormat.Rg16Sint: return DXGI_FORMAT_R16G16_SINT;
-            case PixelFormat.Rg16Float: return DXGI_FORMAT_R16G16_FLOAT;
-            case PixelFormat.Rgba8Unorm: return DXGI_FORMAT_R8G8B8A8_UNORM;
-            case PixelFormat.Rgba8UnormSrgb: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-            case PixelFormat.Rgba8Snorm: return DXGI_FORMAT_R8G8B8A8_SNORM;
-            case PixelFormat.Rgba8Uint: return DXGI_FORMAT_R8G8B8A8_UINT;
-            case PixelFormat.Rgba8Sint: return DXGI_FORMAT_R8G8B8A8_SINT;
-            case PixelFormat.Bgra8Unorm: return DXGI_FORMAT_B8G8R8A8_UNORM;
-            case PixelFormat.Bgra8UnormSrgb: return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+            case PixelFormat.R32Uint: return Format.R32Uint;
+            case PixelFormat.R32Sint: return Format.R32Sint;
+            case PixelFormat.R32Float: return Format.R32Float;
+            case PixelFormat.Rg16Unorm: return Format.R16G16Unorm;
+            case PixelFormat.Rg16Snorm: return Format.R16G16Snorm;
+            case PixelFormat.Rg16Uint: return Format.R16G16Uint;
+            case PixelFormat.Rg16Sint: return Format.R16G16Sint;
+            case PixelFormat.Rg16Float: return Format.R16G16Float;
+            case PixelFormat.Rgba8Unorm: return Format.R8G8B8A8Unorm;
+            case PixelFormat.Rgba8UnormSrgb: return Format.R8G8B8A8UnormSrgb;
+            case PixelFormat.Rgba8Snorm: return Format.R8G8B8A8Snorm;
+            case PixelFormat.Rgba8Uint: return Format.R8G8B8A8Uint;
+            case PixelFormat.Rgba8Sint: return Format.R8G8B8A8Sint;
+            case PixelFormat.Bgra8Unorm: return Format.B8G8R8A8Unorm;
+            case PixelFormat.Bgra8UnormSrgb: return Format.B8G8R8A8UnormSrgb;
             // Packed 32-Bit formats
-            case PixelFormat.Rgb9e5Ufloat: return DXGI_FORMAT_R9G9B9E5_SHAREDEXP;
-            case PixelFormat.Rgb10a2Unorm: return DXGI_FORMAT_R10G10B10A2_UNORM;
-            case PixelFormat.Rgb10a2Uint: return DXGI_FORMAT_R10G10B10A2_UINT;
-            case PixelFormat.Rg11b10Float: return DXGI_FORMAT_R11G11B10_FLOAT;
+            case PixelFormat.Rgb9e5Ufloat: return Format.R9G9B9E5SharedExp;
+            case PixelFormat.Rgb10a2Unorm: return Format.R10G10B10A2Unorm;
+            case PixelFormat.Rgb10a2Uint: return Format.R10G10B10A2Uint;
+            case PixelFormat.Rg11b10Float: return Format.R11G11B10Float;
             // 64-Bit formats
-            case PixelFormat.Rg32Uint: return DXGI_FORMAT_R32G32_UINT;
-            case PixelFormat.Rg32Sint: return DXGI_FORMAT_R32G32_SINT;
-            case PixelFormat.Rg32Float: return DXGI_FORMAT_R32G32_FLOAT;
-            case PixelFormat.Rgba16Unorm: return DXGI_FORMAT_R16G16B16A16_UNORM;
-            case PixelFormat.Rgba16Snorm: return DXGI_FORMAT_R16G16B16A16_SNORM;
-            case PixelFormat.Rgba16Uint: return DXGI_FORMAT_R16G16B16A16_UINT;
-            case PixelFormat.Rgba16Sint: return DXGI_FORMAT_R16G16B16A16_SINT;
-            case PixelFormat.Rgba16Float: return DXGI_FORMAT_R16G16B16A16_FLOAT;
+            case PixelFormat.Rg32Uint: return Format.R32G32Uint;
+            case PixelFormat.Rg32Sint: return Format.R32G32Sint;
+            case PixelFormat.Rg32Float: return Format.R32G32Float;
+            case PixelFormat.Rgba16Unorm: return Format.R16G16B16A16Unorm;
+            case PixelFormat.Rgba16Snorm: return Format.R16G16B16A16Snorm;
+            case PixelFormat.Rgba16Uint: return Format.R16G16B16A16Uint;
+            case PixelFormat.Rgba16Sint: return Format.R16G16B16A16Sint;
+            case PixelFormat.Rgba16Float: return Format.R16G16B16A16Float;
             // 128-Bit formats
-            case PixelFormat.Rgba32Uint: return DXGI_FORMAT_R32G32B32A32_UINT;
-            case PixelFormat.Rgba32Sint: return DXGI_FORMAT_R32G32B32A32_SINT;
-            case PixelFormat.Rgba32Float: return DXGI_FORMAT_R32G32B32A32_FLOAT;
+            case PixelFormat.Rgba32Uint: return Format.R32G32B32A32Uint;
+            case PixelFormat.Rgba32Sint: return Format.R32G32B32A32Sint;
+            case PixelFormat.Rgba32Float: return Format.R32G32B32A32Float;
             // Depth-stencil formats
-            case PixelFormat.Depth16Unorm: return DXGI_FORMAT_D16_UNORM;
-            case PixelFormat.Depth32Float: return DXGI_FORMAT_D32_FLOAT;
-            case PixelFormat.Stencil8: return DXGI_FORMAT_D24_UNORM_S8_UINT;
-            case PixelFormat.Depth24UnormStencil8: return DXGI_FORMAT_D24_UNORM_S8_UINT;
-            case PixelFormat.Depth32FloatStencil8: return DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+            case PixelFormat.Depth16Unorm: return Format.D16Unorm;
+            case PixelFormat.Depth32Float: return Format.D32Float;
+            case PixelFormat.Stencil8: return Format.D24UnormS8Uint;
+            case PixelFormat.Depth24UnormStencil8: return Format.D24UnormS8Uint;
+            case PixelFormat.Depth32FloatStencil8: return Format.D32FloatS8X24Uint;
             // Compressed BC formats
-            case PixelFormat.Bc1RgbaUnorm: return DXGI_FORMAT_BC1_UNORM;
-            case PixelFormat.Bc1RgbaUnormSrgb: return DXGI_FORMAT_BC1_UNORM_SRGB;
-            case PixelFormat.Bc2RgbaUnorm: return DXGI_FORMAT_BC2_UNORM;
-            case PixelFormat.Bc2RgbaUnormSrgb: return DXGI_FORMAT_BC2_UNORM_SRGB;
-            case PixelFormat.Bc3RgbaUnorm: return DXGI_FORMAT_BC3_UNORM;
-            case PixelFormat.Bc3RgbaUnormSrgb: return DXGI_FORMAT_BC3_UNORM_SRGB;
-            case PixelFormat.Bc4RSnorm: return DXGI_FORMAT_BC4_UNORM;
-            case PixelFormat.Bc4RUnorm: return DXGI_FORMAT_BC4_SNORM;
-            case PixelFormat.Bc5RgUnorm: return DXGI_FORMAT_BC5_UNORM;
-            case PixelFormat.Bc5RgSnorm: return DXGI_FORMAT_BC5_SNORM;
-            case PixelFormat.Bc6hRgbSfloat: return DXGI_FORMAT_BC6H_SF16;
-            case PixelFormat.Bc6hRgbUfloat: return DXGI_FORMAT_BC6H_UF16;
-            case PixelFormat.Bc7RgbaUnorm: return DXGI_FORMAT_BC7_UNORM;
-            case PixelFormat.Bc7RgbaUnormSrgb: return DXGI_FORMAT_BC7_UNORM_SRGB;
+            case PixelFormat.Bc1RgbaUnorm: return Format.BC1Unorm;
+            case PixelFormat.Bc1RgbaUnormSrgb: return Format.BC1UnormSrgb;
+            case PixelFormat.Bc2RgbaUnorm: return Format.BC2Unorm;
+            case PixelFormat.Bc2RgbaUnormSrgb: return Format.BC2UnormSrgb;
+            case PixelFormat.Bc3RgbaUnorm: return Format.BC3Unorm;
+            case PixelFormat.Bc3RgbaUnormSrgb: return Format.BC3UnormSrgb;
+            case PixelFormat.Bc4RSnorm: return Format.BC4Unorm;
+            case PixelFormat.Bc4RUnorm: return Format.BC4Snorm;
+            case PixelFormat.Bc5RgUnorm: return Format.BC5Unorm;
+            case PixelFormat.Bc5RgSnorm: return Format.BC5Snorm;
+            case PixelFormat.Bc6hRgbSfloat: return Format.BC6HSF16;
+            case PixelFormat.Bc6hRgbUfloat: return Format.BC6HUF16;
+            case PixelFormat.Bc7RgbaUnorm: return Format.BC7Unorm;
+            case PixelFormat.Bc7RgbaUnormSrgb: return Format.BC7UnormSrgb;
 
             default:
-                return DXGI_FORMAT_UNKNOWN;
+                return Format.Unknown;
         }
     }
 
-    public static PixelFormat FromDxgiFormat(this DXGI_FORMAT format)
+    public static PixelFormat FromDxgiFormat(this Format format)
     {
         switch (format)
         {
             // 8-bit formats
-            case DXGI_FORMAT_R8_UNORM: return PixelFormat.R8Unorm;
-            case DXGI_FORMAT_R8_SNORM: return PixelFormat.R8Snorm;
-            case DXGI_FORMAT_R8_UINT: return PixelFormat.R8Uint;
-            case DXGI_FORMAT_R8_SINT: return PixelFormat.R8Sint;
+            case Format.R8Unorm: return PixelFormat.R8Unorm;
+            case Format.R8Snorm: return PixelFormat.R8Snorm;
+            case Format.R8Uint: return PixelFormat.R8Uint;
+            case Format.R8Sint: return PixelFormat.R8Sint;
             // 16-bit formats
-            case DXGI_FORMAT_R16_UNORM: return PixelFormat.R16Unorm;
-            case DXGI_FORMAT_R16_SNORM: return PixelFormat.R16Snorm;
-            case DXGI_FORMAT_R16_UINT: return PixelFormat.R16Uint;
-            case DXGI_FORMAT_R16_SINT: return PixelFormat.R16Sint;
-            case DXGI_FORMAT_R16_FLOAT: return PixelFormat.R16Float;
-            case DXGI_FORMAT_R8G8_UNORM: return PixelFormat.Rg8Unorm;
-            case DXGI_FORMAT_R8G8_SNORM: return PixelFormat.Rg8Snorm;
-            case DXGI_FORMAT_R8G8_UINT: return PixelFormat.Rg8Uint;
-            case DXGI_FORMAT_R8G8_SINT: return PixelFormat.Rg8Sint;
+            case Format.R16Unorm: return PixelFormat.R16Unorm;
+            case Format.R16Snorm: return PixelFormat.R16Snorm;
+            case Format.R16Uint: return PixelFormat.R16Uint;
+            case Format.R16Sint: return PixelFormat.R16Sint;
+            case Format.R16Float: return PixelFormat.R16Float;
+            case Format.R8G8Unorm: return PixelFormat.Rg8Unorm;
+            case Format.R8G8Snorm: return PixelFormat.Rg8Snorm;
+            case Format.R8G8Uint: return PixelFormat.Rg8Uint;
+            case Format.R8G8Sint: return PixelFormat.Rg8Sint;
             // Packed 16-Bit Pixel Formats
-            case DXGI_FORMAT_B4G4R4A4_UNORM: return PixelFormat.Bgra4Unorm;
-            case DXGI_FORMAT_B5G6R5_UNORM: return PixelFormat.B5G6R5Unorm;
-            case DXGI_FORMAT_B5G5R5A1_UNORM: return PixelFormat.Bgr5A1Unorm;
+            case Format.B4G4R4A4Unorm: return PixelFormat.Bgra4Unorm;
+            case Format.B5G6R5Unorm: return PixelFormat.B5G6R5Unorm;
+            case Format.B5G5R5A1Unorm: return PixelFormat.Bgr5A1Unorm;
             // 32-bit formats
-            case DXGI_FORMAT_R32_UINT: return PixelFormat.R32Uint;
-            case DXGI_FORMAT_R32_SINT: return PixelFormat.R32Sint;
-            case DXGI_FORMAT_R32_FLOAT: return PixelFormat.R32Float;
-            case DXGI_FORMAT_R16G16_UNORM: return PixelFormat.Rg16Unorm;
-            case DXGI_FORMAT_R16G16_SNORM: return PixelFormat.Rg16Snorm;
-            case DXGI_FORMAT_R16G16_UINT: return PixelFormat.Rg16Uint;
-            case DXGI_FORMAT_R16G16_SINT: return PixelFormat.Rg16Sint;
-            case DXGI_FORMAT_R16G16_FLOAT: return PixelFormat.Rg16Float;
-            case DXGI_FORMAT_R8G8B8A8_UNORM: return PixelFormat.Rgba8Unorm;
-            case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB: return PixelFormat.Rgba8UnormSrgb;
-            case DXGI_FORMAT_R8G8B8A8_SNORM: return PixelFormat.Rgba8Snorm;
-            case DXGI_FORMAT_R8G8B8A8_UINT: return PixelFormat.Rgba8Uint;
-            case DXGI_FORMAT_R8G8B8A8_SINT: return PixelFormat.Rgba8Sint;
-            case DXGI_FORMAT_B8G8R8A8_UNORM: return PixelFormat.Bgra8Unorm;
-            case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB: return PixelFormat.Bgra8UnormSrgb;
+            case Format.R32Uint: return PixelFormat.R32Uint;
+            case Format.R32Sint: return PixelFormat.R32Sint;
+            case Format.R32Float: return PixelFormat.R32Float;
+            case Format.R16G16Unorm: return PixelFormat.Rg16Unorm;
+            case Format.R16G16Snorm: return PixelFormat.Rg16Snorm;
+            case Format.R16G16Uint: return PixelFormat.Rg16Uint;
+            case Format.R16G16Sint: return PixelFormat.Rg16Sint;
+            case Format.R16G16Float: return PixelFormat.Rg16Float;
+            case Format.R8G8B8A8Unorm: return PixelFormat.Rgba8Unorm;
+            case Format.R8G8B8A8UnormSrgb: return PixelFormat.Rgba8UnormSrgb;
+            case Format.R8G8B8A8Snorm: return PixelFormat.Rgba8Snorm;
+            case Format.R8G8B8A8Uint: return PixelFormat.Rgba8Uint;
+            case Format.R8G8B8A8Sint: return PixelFormat.Rgba8Sint;
+            case Format.B8G8R8A8Unorm: return PixelFormat.Bgra8Unorm;
+            case Format.B8G8R8A8UnormSrgb: return PixelFormat.Bgra8UnormSrgb;
             // Packed 32-Bit formats
-            case DXGI_FORMAT_R9G9B9E5_SHAREDEXP: return PixelFormat.Rgb9e5Ufloat;
-            case DXGI_FORMAT_R10G10B10A2_UNORM: return PixelFormat.Rgb10a2Unorm;
-            case DXGI_FORMAT_R10G10B10A2_UINT: return PixelFormat.Rgb10a2Uint;
-            case DXGI_FORMAT_R11G11B10_FLOAT: return PixelFormat.Rg11b10Float;
+            case Format.R9G9B9E5SharedExp: return PixelFormat.Rgb9e5Ufloat;
+            case Format.R10G10B10A2Unorm: return PixelFormat.Rgb10a2Unorm;
+            case Format.R10G10B10A2Uint: return PixelFormat.Rgb10a2Uint;
+            case Format.R11G11B10Float: return PixelFormat.Rg11b10Float;
             // 64-Bit formats
-            case DXGI_FORMAT_R32G32_UINT: return PixelFormat.Rg32Uint;
-            case DXGI_FORMAT_R32G32_SINT: return PixelFormat.Rg32Sint;
-            case DXGI_FORMAT_R32G32_FLOAT: return PixelFormat.Rg32Float;
-            case DXGI_FORMAT_R16G16B16A16_UNORM: return PixelFormat.Rgba16Unorm;
-            case DXGI_FORMAT_R16G16B16A16_SNORM: return PixelFormat.Rgba16Snorm;
-            case DXGI_FORMAT_R16G16B16A16_UINT: return PixelFormat.Rgba16Uint;
-            case DXGI_FORMAT_R16G16B16A16_SINT: return PixelFormat.Rgba16Sint;
-            case DXGI_FORMAT_R16G16B16A16_FLOAT: return PixelFormat.Rgba16Float;
+            case Format.R32G32Uint: return PixelFormat.Rg32Uint;
+            case Format.R32G32Sint: return PixelFormat.Rg32Sint;
+            case Format.R32G32Float: return PixelFormat.Rg32Float;
+            case Format.R16G16B16A16Unorm: return PixelFormat.Rgba16Unorm;
+            case Format.R16G16B16A16Snorm: return PixelFormat.Rgba16Snorm;
+            case Format.R16G16B16A16Uint: return PixelFormat.Rgba16Uint;
+            case Format.R16G16B16A16Sint: return PixelFormat.Rgba16Sint;
+            case Format.R16G16B16A16Float: return PixelFormat.Rgba16Float;
             // 128-Bit formats
-            case DXGI_FORMAT_R32G32B32A32_UINT: return PixelFormat.Rgba32Uint;
-            case DXGI_FORMAT_R32G32B32A32_SINT: return PixelFormat.Rgba32Sint;
-            case DXGI_FORMAT_R32G32B32A32_FLOAT: return PixelFormat.Rgba32Float;
+            case Format.R32G32B32A32Uint: return PixelFormat.Rgba32Uint;
+            case Format.R32G32B32A32Sint: return PixelFormat.Rgba32Sint;
+            case Format.R32G32B32A32Float: return PixelFormat.Rgba32Float;
             // Depth-stencil formats
-            case DXGI_FORMAT_D16_UNORM: return PixelFormat.Depth16Unorm;
-            case DXGI_FORMAT_D32_FLOAT: return PixelFormat.Depth32Float;
-            //case DXGI_FORMAT_D24UnormS8Uint: return PixelFormat.Stencil8;
-            case DXGI_FORMAT_D24_UNORM_S8_UINT: return PixelFormat.Depth24UnormStencil8;
-            case DXGI_FORMAT_D32_FLOAT_S8X24_UINT: return PixelFormat.Depth32FloatStencil8;
+            case Format.D16Unorm: return PixelFormat.Depth16Unorm;
+            case Format.D32Float: return PixelFormat.Depth32Float;
+            //case Format.D24UnormS8Uint: return PixelFormat.Stencil8;
+            case Format.D24UnormS8Uint: return PixelFormat.Depth24UnormStencil8;
+            case Format.D32FloatS8X24Uint: return PixelFormat.Depth32FloatStencil8;
             // Compressed BC formats
-            case DXGI_FORMAT_BC1_UNORM: return PixelFormat.Bc1RgbaUnorm;
-            case DXGI_FORMAT_BC1_UNORM_SRGB: return PixelFormat.Bc1RgbaUnormSrgb;
-            case DXGI_FORMAT_BC2_UNORM: return PixelFormat.Bc2RgbaUnorm;
-            case DXGI_FORMAT_BC2_UNORM_SRGB: return PixelFormat.Bc2RgbaUnormSrgb;
-            case DXGI_FORMAT_BC3_UNORM: return PixelFormat.Bc3RgbaUnorm;
-            case DXGI_FORMAT_BC3_UNORM_SRGB: return PixelFormat.Bc3RgbaUnormSrgb;
-            case DXGI_FORMAT_BC4_UNORM: return PixelFormat.Bc4RSnorm;
-            case DXGI_FORMAT_BC4_SNORM: return PixelFormat.Bc4RUnorm;
-            case DXGI_FORMAT_BC5_UNORM: return PixelFormat.Bc5RgUnorm;
-            case DXGI_FORMAT_BC5_SNORM: return PixelFormat.Bc5RgSnorm;
-            case DXGI_FORMAT_BC6H_SF16: return PixelFormat.Bc6hRgbSfloat;
-            case DXGI_FORMAT_BC6H_UF16: return PixelFormat.Bc6hRgbUfloat;
-            case DXGI_FORMAT_BC7_UNORM: return PixelFormat.Bc7RgbaUnorm;
-            case DXGI_FORMAT_BC7_UNORM_SRGB: return PixelFormat.Bc7RgbaUnormSrgb;
+            case Format.BC1Unorm: return PixelFormat.Bc1RgbaUnorm;
+            case Format.BC1UnormSrgb: return PixelFormat.Bc1RgbaUnormSrgb;
+            case Format.BC2Unorm: return PixelFormat.Bc2RgbaUnorm;
+            case Format.BC2UnormSrgb: return PixelFormat.Bc2RgbaUnormSrgb;
+            case Format.BC3Unorm: return PixelFormat.Bc3RgbaUnorm;
+            case Format.BC3UnormSrgb: return PixelFormat.Bc3RgbaUnormSrgb;
+            case Format.BC4Unorm: return PixelFormat.Bc4RSnorm;
+            case Format.BC4Snorm: return PixelFormat.Bc4RUnorm;
+            case Format.BC5Unorm: return PixelFormat.Bc5RgUnorm;
+            case Format.BC5Snorm: return PixelFormat.Bc5RgSnorm;
+            case Format.BC6HSF16: return PixelFormat.Bc6hRgbSfloat;
+            case Format.BC6HUF16: return PixelFormat.Bc6hRgbUfloat;
+            case Format.BC7Unorm: return PixelFormat.Bc7RgbaUnorm;
+            case Format.BC7UnormSrgb: return PixelFormat.Bc7RgbaUnormSrgb;
 
             default:
                 return PixelFormat.Undefined;
@@ -220,18 +220,18 @@ internal static unsafe class D3DUtils
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static DXGI_FORMAT GetTypelessFormatFromDepthFormat(this PixelFormat format)
+    public static Format GetTypelessFormatFromDepthFormat(this PixelFormat format)
     {
         switch (format)
         {
             case PixelFormat.Depth16Unorm:
-                return DXGI_FORMAT_R16_TYPELESS;
+                return Format.R16Typeless;
             case PixelFormat.Depth32Float:
-                return DXGI_FORMAT_R32_TYPELESS;
+                return Format.R32Typeless;
             case PixelFormat.Depth24UnormStencil8:
-                return DXGI_FORMAT_R24G8_TYPELESS;
+                return Format.R24G8Typeless;
             case PixelFormat.Depth32FloatStencil8:
-                return DXGI_FORMAT_R32G8X24_TYPELESS;
+                return Format.R32G8X24Typeless;
 
             default:
                 Guard.IsFalse(format.IsDepthFormat(), nameof(format));
@@ -239,62 +239,62 @@ internal static unsafe class D3DUtils
         }
     }
 
-    public static DXGI_FORMAT ToDxgiFormat(this VertexFormat format)
+    public static Format ToDxgiFormat(this VertexFormat format)
     {
         switch (format)
         {
-            case VertexFormat.UByte2: return DXGI_FORMAT_R8G8_UINT;
-            case VertexFormat.UByte4: return DXGI_FORMAT_R8G8B8A8_UINT;
-            case VertexFormat.Byte2: return DXGI_FORMAT_R8G8_SINT;
-            case VertexFormat.Byte4: return DXGI_FORMAT_R8G8B8A8_SINT;
-            case VertexFormat.UByte2Normalized: return DXGI_FORMAT_R8G8_UNORM;
-            case VertexFormat.UByte4Normalized: return DXGI_FORMAT_R8G8B8A8_UNORM;
-            case VertexFormat.Byte2Normalized: return DXGI_FORMAT_R8G8_SNORM;
-            case VertexFormat.Byte4Normalized: return DXGI_FORMAT_R8G8B8A8_SNORM;
+            case VertexFormat.UByte2: return Format.R8G8Uint;
+            case VertexFormat.UByte4: return Format.R8G8B8A8Uint;
+            case VertexFormat.Byte2: return Format.R8G8Sint;
+            case VertexFormat.Byte4: return Format.R8G8B8A8Sint;
+            case VertexFormat.UByte2Normalized: return Format.R8G8Unorm;
+            case VertexFormat.UByte4Normalized: return Format.R8G8B8A8Unorm;
+            case VertexFormat.Byte2Normalized: return Format.R8G8Snorm;
+            case VertexFormat.Byte4Normalized: return Format.R8G8B8A8Snorm;
 
-            case VertexFormat.UShort2: return DXGI_FORMAT_R16G16_UINT;
-            case VertexFormat.UShort4: return DXGI_FORMAT_R16G16B16A16_UINT;
-            case VertexFormat.Short2: return DXGI_FORMAT_R16G16_SINT;
-            case VertexFormat.Short4: return DXGI_FORMAT_R16G16B16A16_SINT;
-            case VertexFormat.UShort2Normalized: return DXGI_FORMAT_R16G16_UNORM;
-            case VertexFormat.UShort4Normalized: return DXGI_FORMAT_R16G16B16A16_UNORM;
-            case VertexFormat.Short2Normalized: return DXGI_FORMAT_R16G16_SNORM;
-            case VertexFormat.Short4Normalized: return DXGI_FORMAT_R16G16B16A16_SNORM;
-            case VertexFormat.Half2: return DXGI_FORMAT_R16G16_FLOAT;
-            case VertexFormat.Half4: return DXGI_FORMAT_R16G16B16A16_FLOAT;
+            case VertexFormat.UShort2: return Format.R16G16Uint;
+            case VertexFormat.UShort4: return Format.R16G16B16A16Uint;
+            case VertexFormat.Short2: return Format.R16G16Sint;
+            case VertexFormat.Short4: return Format.R16G16B16A16Sint;
+            case VertexFormat.UShort2Normalized: return Format.R16G16Unorm;
+            case VertexFormat.UShort4Normalized: return Format.R16G16B16A16Unorm;
+            case VertexFormat.Short2Normalized: return Format.R16G16Snorm;
+            case VertexFormat.Short4Normalized: return Format.R16G16B16A16Snorm;
+            case VertexFormat.Half2: return Format.R16G16Float;
+            case VertexFormat.Half4: return Format.R16G16B16A16Float;
 
-            case VertexFormat.Float: return DXGI_FORMAT_R32_FLOAT;
-            case VertexFormat.Float2: return DXGI_FORMAT_R32G32_FLOAT;
-            case VertexFormat.Float3: return DXGI_FORMAT_R32G32B32_FLOAT;
-            case VertexFormat.Float4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
+            case VertexFormat.Float: return Format.R32Float;
+            case VertexFormat.Float2: return Format.R32G32Float;
+            case VertexFormat.Float3: return Format.R32G32B32Float;
+            case VertexFormat.Float4: return Format.R32G32B32A32Float;
 
-            case VertexFormat.UInt: return DXGI_FORMAT_R32_UINT;
-            case VertexFormat.UInt2: return DXGI_FORMAT_R32G32_UINT;
-            case VertexFormat.UInt3: return DXGI_FORMAT_R32G32B32_UINT;
-            case VertexFormat.UInt4: return DXGI_FORMAT_R32G32B32A32_UINT;
+            case VertexFormat.UInt: return Format.R32Uint;
+            case VertexFormat.UInt2: return Format.R32G32Uint;
+            case VertexFormat.UInt3: return Format.R32G32B32Uint;
+            case VertexFormat.UInt4: return Format.R32G32B32A32Uint;
 
-            case VertexFormat.Int: return DXGI_FORMAT_R32_SINT;
-            case VertexFormat.Int2: return DXGI_FORMAT_R32G32_SINT;
-            case VertexFormat.Int3: return DXGI_FORMAT_R32G32B32_SINT;
-            case VertexFormat.Int4: return DXGI_FORMAT_R32G32B32A32_SINT;
+            case VertexFormat.Int: return Format.R32Sint;
+            case VertexFormat.Int2: return Format.R32G32Sint;
+            case VertexFormat.Int3: return Format.R32G32B32Sint;
+            case VertexFormat.Int4: return Format.R32G32B32A32Sint;
 
-            case VertexFormat.Int1010102Normalized: return DXGI_FORMAT_R10G10B10A2_UNORM;
-            case VertexFormat.UInt1010102Normalized: return DXGI_FORMAT_R10G10B10A2_UINT;
+            case VertexFormat.Int1010102Normalized: return Format.R10G10B10A2Unorm;
+            case VertexFormat.UInt1010102Normalized: return Format.R10G10B10A2Uint;
 
             default:
-                return DXGI_FORMAT_UNKNOWN;
+                return Format.Unknown;
         }
     }
 
-    public static DXGI_FORMAT ToDxgiFormat(this IndexType indexType)
+    public static Format ToDxgiFormat(this IndexType indexType)
     {
         switch (indexType)
         {
-            case IndexType.Uint16: return DXGI_FORMAT_R16_UINT;
-            case IndexType.Uint32: return DXGI_FORMAT_R32_UINT;
+            case IndexType.Uint16: return Format.R16Uint;
+            case IndexType.Uint32: return Format.R32Uint;
 
             default:
-                return DXGI_FORMAT_R16_UINT;
+                return Format.R16Uint;
         }
     }
 
@@ -331,10 +331,10 @@ internal static unsafe class D3DUtils
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static DXGI_GPU_PREFERENCE ToDxgi(this GpuPowerPreference value) => s_d3dGpuPreferenceMap[(uint)value];
+    public static GpuPreference ToDxgi(this GpuPowerPreference value) => s_d3dGpuPreferenceMap[(uint)value];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static D3D_PRIMITIVE_TOPOLOGY ToD3DPrimitiveTopology(this PrimitiveTopology value) => s_d3dPrimitiveTopologyMap[(uint)value];
+    public static D3DPrimitiveTopology ToD3DPrimitiveTopology(this PrimitiveTopology value) => s_d3dPrimitiveTopologyMap[(uint)value];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint PresentModeToBufferCount(PresentMode mode)
