@@ -19,6 +19,5 @@ Please consider [SPONSOR](https://github.com/sponsors/amerkoleci) me to further 
 
 Uses the following open-source and third-party libraries:
 
-- [terrafx.interop.windows](https://github.com/terrafx/terrafx.interop.windows): Interop bindings for Windows.
-- [terrafx.interop.d3d12memoryallocator](https://github.com/terrafx/terrafx.interop.d3d12memoryallocator): Interop bindings for D3D12MemoryAllocator
+- [Vortice.Win32](https://github.com/amerkoleci/Vortice.Win32): Low level .NET bindings for Win32 Api.
 - [Vortice.Vulkan](https://github.com/amerkoleci/Vortice.Vulkan): Cross platform .NET bindings for Vulkan
